@@ -1,0 +1,10 @@
+__pycache__/
+venv/
+.vscode/
+
+ch2/
+*.gif
+*.tiff
+*.czi
+*.jpg
+*.png
