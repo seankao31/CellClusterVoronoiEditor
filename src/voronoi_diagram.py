@@ -38,6 +38,19 @@ class VoronoiDiagram:
                 self.points.append(point)
                 self.is_prepared = False
 
+    def deletePoint(self, index):
+        # Explicitly disallow -1 ~ -len
+        if index < 0:
+            raise IndexError()
+        del self.points[index]
+
+    def editPoint(self, index, new_point):
+        # Explicitly disallow -1 ~ -len
+        if index < 0:
+            raise IndexError()
+        self.checkPointValid(new_point)
+        self.points[index] = new_point
+
     def checkPointValid(self, point):
         if len(point) != 2:
             raise ValueError('Point length should be 2.')

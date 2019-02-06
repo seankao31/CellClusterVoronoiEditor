@@ -98,6 +98,34 @@ class Test_addPoints:
         assert(len(voronoi_diagram.points) == 5)
 
 
+class Test_deletePoint:
+    def test_deletePoint(self):
+        voronoi_diagram = VoronoiDiagram(h=10, w=20)
+        points = [(1, 2), (2, 2), (3, 5)]
+        voronoi_diagram.addPoints(points)
+        assert((1, 2) in voronoi_diagram.points)
+        voronoi_diagram.deletePoint(0)
+        assert((1, 2) not in voronoi_diagram.points)
+        with pytest.raises(IndexError):
+            voronoi_diagram.deletePoint(-1)
+        with pytest.raises(IndexError):
+            voronoi_diagram.deletePoint(-5)
+        with pytest.raises(IndexError):
+            voronoi_diagram.deletePoint(2)
+
+
+class Test_editPoint:
+    def test_editPoint(self):
+        voronoi_diagram = VoronoiDiagram(h=10, w=20)
+        points = [(1, 2), (2, 2), (3, 5)]
+        voronoi_diagram.addPoints(points)
+        assert((1, 2) in voronoi_diagram.points)
+        assert((2, 5) not in voronoi_diagram.points)
+        voronoi_diagram.editPoint(0, (2, 5))
+        assert((1, 2) not in voronoi_diagram.points)
+        assert((2, 5) in voronoi_diagram.points)
+
+
 class Test_generateVoronoi:
     def test_generateVoronoi_invalid_one_point(self):
         voronoi_diagram = VoronoiDiagram(h=30, w=30)
