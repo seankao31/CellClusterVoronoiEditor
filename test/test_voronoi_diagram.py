@@ -136,3 +136,15 @@ class Test_generateVoronoi:
         assert(len(voronoi_diagram.points) == 8)
         with pytest.raises(QhullError):
             voronoi_diagram.generateVoronoi()
+
+
+class Test_findNeareastPoint:
+    def test_findNearestPoint(self):
+        voronoi_diagram = VoronoiDiagram(h=30, w=30)
+        points = [(1, 1), (2, 5), (7, 2), (15, 29)]
+        voronoi_diagram.addPoints(points)
+        voronoi_diagram.prepare()
+        assert(voronoi_diagram.findNearestPoint((1, 1)) == 0)
+        assert(voronoi_diagram.findNearestPoint((1, 2)) == 0)
+        assert(voronoi_diagram.findNearestPoint((5, 3)) == 2)
+        assert(voronoi_diagram.findNearestPoint((20, 20)) == 3)

@@ -1,4 +1,4 @@
-from scipy.spatial import Voronoi
+from scipy.spatial import Voronoi, cKDTree
 
 
 class VoronoiDiagram:
@@ -7,6 +7,23 @@ class VoronoiDiagram:
         self.w = w
         self.points = []
         self.is_prepared = False
+
+    @property
+    def voronoi(self):
+        if not self.is_prepared:
+            self.prepare()
+        return self._voronoi
+
+    @voronoi.setter
+    def voronoi(self, value):
+        self._voronoi = value
+
+    def prepare(self):
+        if self.is_prepared:
+            return
+        self.is_prepared = True
+        self.finalPoints()
+        self.generateVoronoi()
 
     def addPoint(self, r, c):
         point = (r, c)
@@ -29,6 +46,12 @@ class VoronoiDiagram:
         if r < 0 or r >= self.h or c < 0 or c >= self.w:
             raise ValueError('Point out of range.')
 
+    def finalPoints(self):
+        self.points_kdtree = cKDTree(self.points)
+
     def generateVoronoi(self):
-        points = np.array([list(point) for point in self.points])
-        self.voronoi = Voronoi(points)
+        self.voronoi = Voronoi(self.points)
+
+    def findNearestPoint(self, query_point):
+        dist, index = self.points_kdtree.query(query_point)
+        return index
