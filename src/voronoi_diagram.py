@@ -28,15 +28,17 @@ class VoronoiDiagram:
     def addPoint(self, r, c):
         point = (r, c)
         self.checkPointValid(point)
-        if point not in self.points:
-            self.points.append(point)
-            self.is_prepared = False
+        if point in self.points:
+            raise ValueError('Cannot add duplicate point.')
+        self.points.append(point)
+        self.is_prepared = False
 
     def addPoints(self, points):
-        for point in points:
-            if point not in self.points:
-                self.points.append(point)
-                self.is_prepared = False
+        count = 0
+        for r, c in points:
+            self.addPoint(r, c)
+            count += 1
+        return count
 
     def deletePoint(self, index):
         # Explicitly disallow -1 ~ -len

@@ -85,7 +85,8 @@ class Test_addPoint:
         voronoi_diagram = VoronoiDiagram(h=10, w=20)
         assert(not voronoi_diagram.points)
         voronoi_diagram.addPoint(3, 3)
-        voronoi_diagram.addPoint(3, 3)
+        with pytest.raises(ValueError):
+            voronoi_diagram.addPoint(3, 3)
         assert(len(voronoi_diagram.points) == 1)
 
 
@@ -93,9 +94,29 @@ class Test_addPoints:
     def test_addPoints_multiple(self):
         voronoi_diagram = VoronoiDiagram(h=10, w=20)
         assert(not voronoi_diagram.points)
-        points = [(1, 2), (2, 2), (4, 5), (15, 2), (3, 2), (2, 2), (1, 2)]
-        voronoi_diagram.addPoints(points)
+        points = [(1, 2), (2, 2), (4, 5), (7, 2), (3, 2)]
+        count = voronoi_diagram.addPoints(points)
+        assert(count == 5)
         assert(len(voronoi_diagram.points) == 5)
+
+    def test_addPoints_duplicate(self):
+        voronoi_diagram = VoronoiDiagram(h=10, w=20)
+        assert(not voronoi_diagram.points)
+        points = [(1, 2), (2, 2), (4, 5), (7, 2), (3, 2), (2, 2), (1, 2)]
+        with pytest.raises(ValueError):
+            count = voronoi_diagram.addPoints(points)
+            assert(count == 5)
+        # assert(not voronoi_diagram.points)
+        assert(len(voronoi_diagram.points) == 5)
+
+    def test_addPoints_duplicate_early(self):
+        voronoi_diagram = VoronoiDiagram(h=10, w=20)
+        assert(not voronoi_diagram.points)
+        points = [(1, 2), (2, 2), (2, 2), (4, 5), (7, 2), (3, 2)]
+        with pytest.raises(ValueError):
+            count = voronoi_diagram.addPoints(points)
+            assert(count == 2)
+        assert(len(voronoi_diagram.points) == 2)
 
 
 class Test_deletePoint:
