@@ -6,6 +6,7 @@ class VoronoiDiagram:
         self.h = h
         self.w = w
         self.points = []
+        self.region_color_map = []
         self.is_prepared = False
 
     @property
@@ -31,20 +32,19 @@ class VoronoiDiagram:
         if point in self.points:
             raise ValueError('Cannot add duplicate point.')
         self.points.append(point)
+        self.region_color_map.append(-1)
         self.is_prepared = False
 
     def addPoints(self, points):
-        count = 0
         for r, c in points:
             self.addPoint(r, c)
-            count += 1
-        return count
 
     def deletePoint(self, index):
         # Explicitly disallow -1 ~ -len
         if index < 0:
             raise IndexError()
         del self.points[index]
+        del self.region_color_map[index]
 
     def editPoint(self, index, new_point):
         # Explicitly disallow -1 ~ -len
@@ -52,6 +52,12 @@ class VoronoiDiagram:
             raise IndexError()
         self.checkPointValid(new_point)
         self.points[index] = new_point
+
+    def editRegionColor(self, index, new_color):
+        # Explicitly disallow -1 ~ -len
+        if index < 0:
+            raise IndexError()
+        self.region_color_map[index] = new_color
 
     def checkPointValid(self, point):
         if len(point) != 2:

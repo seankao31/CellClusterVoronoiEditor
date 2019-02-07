@@ -72,6 +72,7 @@ class Test_addPoint:
         assert(not voronoi_diagram.points)
         voronoi_diagram.addPoint(3, 3)
         assert(len(voronoi_diagram.points) == 1)
+        assert(len(voronoi_diagram.region_color_map) == 1)
 
     def test_addPoint_multiple(self):
         voronoi_diagram = VoronoiDiagram(h=10, w=20)
@@ -80,6 +81,7 @@ class Test_addPoint:
         voronoi_diagram.addPoint(4, 4)
         voronoi_diagram.addPoint(2, 9)
         assert(len(voronoi_diagram.points) == 3)
+        assert(len(voronoi_diagram.region_color_map) == 3)
 
     def test_addPoint_duplicate(self):
         voronoi_diagram = VoronoiDiagram(h=10, w=20)
@@ -88,6 +90,7 @@ class Test_addPoint:
         with pytest.raises(ValueError):
             voronoi_diagram.addPoint(3, 3)
         assert(len(voronoi_diagram.points) == 1)
+        assert(len(voronoi_diagram.region_color_map) == 1)
 
 
 class Test_addPoints:
@@ -95,28 +98,28 @@ class Test_addPoints:
         voronoi_diagram = VoronoiDiagram(h=10, w=20)
         assert(not voronoi_diagram.points)
         points = [(1, 2), (2, 2), (4, 5), (7, 2), (3, 2)]
-        count = voronoi_diagram.addPoints(points)
-        assert(count == 5)
+        voronoi_diagram.addPoints(points)
         assert(len(voronoi_diagram.points) == 5)
+        assert(len(voronoi_diagram.region_color_map) == 5)
 
     def test_addPoints_duplicate(self):
         voronoi_diagram = VoronoiDiagram(h=10, w=20)
         assert(not voronoi_diagram.points)
         points = [(1, 2), (2, 2), (4, 5), (7, 2), (3, 2), (2, 2), (1, 2)]
         with pytest.raises(ValueError):
-            count = voronoi_diagram.addPoints(points)
-            assert(count == 5)
+            voronoi_diagram.addPoints(points)
         # assert(not voronoi_diagram.points)
         assert(len(voronoi_diagram.points) == 5)
+        assert(len(voronoi_diagram.region_color_map) == 5)
 
     def test_addPoints_duplicate_early(self):
         voronoi_diagram = VoronoiDiagram(h=10, w=20)
         assert(not voronoi_diagram.points)
         points = [(1, 2), (2, 2), (2, 2), (4, 5), (7, 2), (3, 2)]
         with pytest.raises(ValueError):
-            count = voronoi_diagram.addPoints(points)
-            assert(count == 2)
+            voronoi_diagram.addPoints(points)
         assert(len(voronoi_diagram.points) == 2)
+        assert(len(voronoi_diagram.region_color_map) == 2)
 
 
 class Test_deletePoint:
@@ -125,14 +128,18 @@ class Test_deletePoint:
         points = [(1, 2), (2, 2), (3, 5)]
         voronoi_diagram.addPoints(points)
         assert((1, 2) in voronoi_diagram.points)
+        assert(len(voronoi_diagram.region_color_map) == 3)
         voronoi_diagram.deletePoint(0)
         assert((1, 2) not in voronoi_diagram.points)
+        assert(len(voronoi_diagram.region_color_map) == 2)
         with pytest.raises(IndexError):
             voronoi_diagram.deletePoint(-1)
         with pytest.raises(IndexError):
             voronoi_diagram.deletePoint(-5)
         with pytest.raises(IndexError):
             voronoi_diagram.deletePoint(2)
+        assert(len(voronoi_diagram.points) == 2)
+        assert(len(voronoi_diagram.region_color_map) == 2)
 
 
 class Test_editPoint:
@@ -142,9 +149,25 @@ class Test_editPoint:
         voronoi_diagram.addPoints(points)
         assert((1, 2) in voronoi_diagram.points)
         assert((2, 5) not in voronoi_diagram.points)
-        voronoi_diagram.editPoint(0, (2, 5))
+        voronoi_diagram.editPoint(index=0, new_point=(2, 5))
         assert((1, 2) not in voronoi_diagram.points)
         assert((2, 5) in voronoi_diagram.points)
+        with pytest.raises(IndexError):
+            voronoi_diagram.editPoint(index=5, new_point=(3, 3))
+
+
+class Test_editRegionColor:
+    def test_editRegionColor(self):
+        voronoi_diagram = VoronoiDiagram(h=10, w=20)
+        points = [(1, 2), (2, 2), (3, 5)]
+        voronoi_diagram.addPoints(points)
+        assert(all(color == -1 for color in voronoi_diagram.region_color_map))
+        voronoi_diagram.editRegionColor(index=1, new_color=1)
+        assert(voronoi_diagram.region_color_map[0] == -1)
+        assert(voronoi_diagram.region_color_map[1] == 1)
+        assert(voronoi_diagram.region_color_map[2] == -1)
+        with pytest.raises(IndexError):
+            voronoi_diagram.editRegionColor(index=5, new_color=2)
 
 
 class Test_generateVoronoi:
