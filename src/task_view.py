@@ -1,7 +1,8 @@
+import numpy as np
 import tkinter as tk
 from PIL import Image, ImageDraw, ImageTk
 
-from src.plot_utils import voronoiSegments
+from src.plot_utils import voronoiSegments, voronoiFinitePolygons
 
 
 class TaskView(tk.Toplevel):
@@ -22,6 +23,13 @@ class TaskView(tk.Toplevel):
         self.draw_voronoi = Image.new(
                 "RGB", (self.width, self.height), 'white')
         self.draw = ImageDraw.Draw(self.draw_voronoi)
+
+        regions, vertices = voronoiFinitePolygons(voronoi)
+        for region in regions:
+            polygon = vertices[region]
+            flattened = [i for sub in polygon for i in sub]
+            self.draw.polygon(
+                    flattened, tuple(np.random.choice(range(256), size=3)))
 
         finite_segments, infinite_segments = voronoiSegments(voronoi)
         for s in finite_segments:
