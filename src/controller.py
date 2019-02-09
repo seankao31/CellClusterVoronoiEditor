@@ -8,6 +8,7 @@ class Controller:
         self.model = Model()
         self.main_view = View(root)
         self.task_view = TaskView(self.main_view)
+        self.task_view.bind('<Button-1>', self.taskEventHandler)
 
     def taskLoadImage(self, image_file_name):
         self.model.setupTask(image_file_name)
@@ -18,4 +19,13 @@ class Controller:
         self.model.voronoi_diagram.addPoint(r, c)
 
     def taskDisplayVoronoi(self):
-        self.task_view.displayVoronoi(self.model.voronoi_diagram.voronoi)
+        self.task_view.displayVoronoi(
+                self.model.voronoi_diagram.voronoi,
+                self.model.voronoi_diagram.points)
+
+    def taskEventHandler(self, event):
+        try:
+            self.model.voronoi_diagram.addPoint(event.x, event.y)
+            self.taskDisplayVoronoi()
+        except ValueError as e:
+            print(e)

@@ -11,6 +11,7 @@ class TaskView(tk.Toplevel):
         self.title('Task')
         self.canvas = tk.Canvas(self)
         self.canvas.pack(side='left')
+        self.resizable(False, False)
 
     def displayImage(self, image):
         self.back_image = image
@@ -19,7 +20,7 @@ class TaskView(tk.Toplevel):
         self.canvas.config(width=width, height=height)
         self.canvas.create_image((0, 0), image=photo_image, anchor="nw")
 
-    def displayVoronoi(self, voronoi):
+    def displayVoronoi(self, voronoi, points):
         self.draw_voronoi = Image.new(
                 "RGB", (self.width, self.height), 'white')
         self.draw = ImageDraw.Draw(self.draw_voronoi)
@@ -36,6 +37,9 @@ class TaskView(tk.Toplevel):
             self.draw.line([s[0][0], s[0][1], s[1][0], s[1][1]], 'red')
         for s in infinite_segments:
             self.draw.line([s[0][0], s[0][1], s[1][0], s[1][1]], 'red')
+
+        for p in points:
+            self.draw.arc([p[0]-5, p[1]-5, p[0]+5, p[1]+5], 0, 360, 'red')
 
         blend = Image.blend(
                 self.back_image.convert('RGB'), self.draw_voronoi, 0.5)
