@@ -20,8 +20,7 @@ class Controller:
 
     def taskDisplayVoronoi(self):
         self.task_view.displayVoronoi(
-                self.model.voronoi_diagram.voronoi,
-                self.model.voronoi_diagram.points)
+                self.model.voronoi_diagram.voronoi)
 
     def taskEventHandler(self, event):
         try:

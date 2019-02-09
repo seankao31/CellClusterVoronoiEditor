@@ -21,17 +21,17 @@ class TaskView(tk.Toplevel):
         self.canvas.config(width=width, height=height)
         self.canvas.create_image((0, 0), image=photo_image, anchor="nw")
 
-    def displayVoronoi(self, voronoi, points):
+    def displayVoronoi(self, voronoi):
         self.draw_voronoi = Image.new(
-                "RGB", (self.width, self.height), 'white')
+                "RGB", (self.width, self.height), 'black')
         self.draw = ImageDraw.Draw(self.draw_voronoi)
 
         regions, vertices = voronoiFinitePolygons(voronoi)
         for region in regions:
             polygon = vertices[region]
             flattened = [i for sub in polygon for i in sub]
-            self.draw.polygon(
-                    flattened, tuple(np.random.choice(range(256), size=3)))
+            color = tuple(np.random.choice(range(256), size=3))
+            self.draw.polygon(flattened, fill=color, outline=None)
 
         finite_segments, infinite_segments = voronoiSegments(voronoi)
         for s in finite_segments:
@@ -39,7 +39,7 @@ class TaskView(tk.Toplevel):
         for s in infinite_segments:
             self.draw.line([s[0][0], s[0][1], s[1][0], s[1][1]], 'red')
 
-        for p in points:
+        for p in voronoi.points:
             self.draw.arc([p[0]-5, p[1]-5, p[0]+5, p[1]+5], 0, 360, 'red')
 
         blend = Image.blend(
