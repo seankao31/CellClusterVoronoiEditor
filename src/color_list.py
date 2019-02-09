@@ -1,4 +1,5 @@
 from collections import OrderedDict
+
 from colour import Color
 
 

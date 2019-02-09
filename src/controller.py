@@ -1,6 +1,6 @@
 from src.model import Model
-from src.view import View
 from src.task_view import TaskView
+from src.view import View
 
 
 class Controller:

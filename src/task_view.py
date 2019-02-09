@@ -1,8 +1,9 @@
-import numpy as np
 import tkinter as tk
+
+import numpy as np
 from PIL import Image, ImageDraw, ImageTk
 
-from src.plot_utils import voronoiSegments, voronoiFinitePolygons
+from src.plot_utils import voronoiFinitePolygons, voronoiSegments
 
 
 class TaskView(tk.Toplevel):
