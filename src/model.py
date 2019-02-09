@@ -1,4 +1,4 @@
-from PIL import Image, ImageTk
+from PIL import Image
 
 from src.color_list import ColorList
 from src.voronoi_diagram import VoronoiDiagram
@@ -27,12 +27,8 @@ class Model:
 
     def setupTask(self, image_file_name):
         self.image = image = self.createImage(image_file_name)
-        self.voronoi_diagram = VoronoiDiagram(image.height(), image.width())
+        width, height = image.size
+        self.voronoi_diagram = VoronoiDiagram(h=height, w=width)
 
     def createImage(self, file_name):
-        # To avoid "RuntimeError: Too early to create image",
-        # call Tk() beforehand
-        image = ImageTk.PhotoImage(Image.open(file_name))
-        self.image_refs.append(image)  # keep a reference!
-        # http://effbot.org/pyfaq/why-do-my-tkinter-images-not-appear.htm
-        return image
+        return Image.open(file_name)

@@ -1,4 +1,5 @@
 import tkinter as tk
+from PIL import ImageTk
 
 
 class TaskView(tk.Toplevel):
@@ -10,8 +11,10 @@ class TaskView(tk.Toplevel):
 
     def displayImage(self, image):
         self.image = image
-        self.canvas.config(width=image.width(), height=image.height())
-        self.canvas.create_image((0, 0), image=image, anchor="nw")
+        self.photo_image = photo_image = ImageTk.PhotoImage(image)
+        width, height = image.size
+        self.canvas.config(width=width, height=height)
+        self.canvas.create_image((0, 0), image=photo_image, anchor="nw")
 
     def displayVoronoi(self, voronoi):
         pass
