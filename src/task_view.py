@@ -9,5 +9,9 @@ class TaskView(tk.Toplevel):
         self.canvas.pack(side='left')
 
     def displayImage(self, image):
+        self.image = image
         self.canvas.config(width=image.width(), height=image.height())
         self.canvas.create_image((0, 0), image=image, anchor="nw")
+
+    def displayVoronoi(self, voronoi):
+        pass
