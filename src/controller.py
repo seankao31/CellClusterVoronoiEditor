@@ -12,19 +12,19 @@ class Controller:
 
     def taskLoadImage(self, image_file_name):
         self.model.setupTask(image_file_name)
-        self.task_view.displayImage(self.model.image)
+        self.taskDisplayImage(self.model.back_image)
 
     # use callback function instead
     def addPoint(self, r, c):
         self.model.voronoi_diagram.addPoint(r, c)
 
-    def taskDisplayVoronoi(self):
-        self.task_view.displayVoronoi(
-                self.model.voronoi_diagram.voronoi)
+    def taskDisplayImage(self, image):
+        self.task_view.displayImage(image)
 
     def taskEventHandler(self, event):
         try:
             self.model.voronoi_diagram.addPoint(event.x, event.y)
-            self.taskDisplayVoronoi()
+            self.model.blendImageVoronoi()
+            self.taskDisplayImage(self.model.blend_image_voronoi)
         except ValueError as e:
             print(e)
