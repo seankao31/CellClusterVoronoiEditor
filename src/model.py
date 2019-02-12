@@ -1,10 +1,11 @@
 import numpy as np
 
-from PIL import Image, ImageDraw
+from PIL import Image
 
 from src.color_list import ColorList
-from src.voronoi_diagram import VoronoiDiagram
+from src.draw import Draw
 from src.plot_utils import voronoiFinitePolygons, voronoiSegments
+from src.voronoi_diagram import VoronoiDiagram
 
 
 class Model:
@@ -38,9 +39,8 @@ class Model:
 
     def blendImageVoronoi(self):
         width, height = self.back_image.size
-        draw_voronoi = Image.new(
-                "RGB", (width, height), 'black')
-        draw = ImageDraw.Draw(draw_voronoi)
+        draw_voronoi = Image.new('RGB', (width, height), 'black')
+        draw = Draw(draw_voronoi)
         voronoi = self.voronoi_diagram.voronoi
 
         regions, vertices = voronoiFinitePolygons(voronoi)
@@ -51,16 +51,17 @@ class Model:
             draw.polygon(flattened, fill=color, outline=None)
 
         finite_segments, infinite_segments = voronoiSegments(voronoi)
-        line_width = 0
+        finite_segments = [[(a, b) for a, b in s] for s in finite_segments]
+        infinite_segments = [[(a, b) for a, b in s] for s in infinite_segments]
+
+        line_width = 4
         for s in finite_segments:
-            draw.line([s[0][0], s[0][1], s[1][0], s[1][1]],
-                      fill='red', width=line_width)
+            draw.line(s, fill='red', width=line_width)
         for s in infinite_segments:
-            draw.line([s[0][0], s[0][1], s[1][0], s[1][1]],
-                      fill='red', width=line_width)
+            draw.line(s, fill='red', width=line_width)
 
         for p in voronoi.points:
-            draw.arc([p[0]-5, p[1]-5, p[0]+5, p[1]+5], 0, 360, 'red')
+            draw.circle(p, radius=2, fill='red')
 
         self.blend_image_voronoi = Image.blend(
                 self.back_image.convert('RGB'), draw_voronoi, 0.5)
