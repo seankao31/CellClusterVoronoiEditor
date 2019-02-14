@@ -4,7 +4,7 @@ from PIL import Image
 
 from src.color_list import ColorList
 from src.draw import Draw
-from src.plot_utils import voronoiFinitePolygons, voronoiSegments
+from src.voronoi_analysis import VoronoiAnalysis
 from src.voronoi_diagram import VoronoiDiagram
 
 
@@ -42,15 +42,17 @@ class Model:
         draw_voronoi = Image.new('RGB', (width, height), 'black')
         draw = Draw(draw_voronoi)
         voronoi = self.voronoi_diagram.voronoi
+        voronoi_analysis = VoronoiAnalysis(voronoi)
 
-        regions, vertices = voronoiFinitePolygons(voronoi)
+        bbox = [(0, 0), (width, height)]
+        regions, vertices, finite_segments, infinite_segments = \
+            voronoi_analysis.finitePolygons(bbox)
         for region in regions:
             polygon = vertices[region]
             flattened = [i for sub in polygon for i in sub]
             color = tuple(np.random.choice(range(256), size=3))
             draw.polygon(flattened, fill=color, outline=None)
 
-        finite_segments, infinite_segments = voronoiSegments(voronoi)
         finite_segments = [[(a, b) for a, b in s] for s in finite_segments]
         infinite_segments = [[(a, b) for a, b in s] for s in infinite_segments]
 
