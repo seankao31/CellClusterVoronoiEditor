@@ -1,7 +1,5 @@
 from collections import OrderedDict
 
-from colour import Color
-
 
 class ColorList:
     def __init__(self):
@@ -18,5 +16,5 @@ class ColorList:
         del self.colors[key]
 
     def new(self):
-        self.colors[self.id] = Color()
+        self.colors[self.id] = (0, 0, 0)
         self.id += 1

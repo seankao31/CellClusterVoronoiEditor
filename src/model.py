@@ -47,10 +47,14 @@ class Model:
         bbox = [(0, 0), (width, height)]
         regions, vertices, finite_segments, infinite_segments = \
             voronoi_analysis.finitePolygons(bbox)
-        for region in regions:
+        for p, region in enumerate(regions):
             polygon = vertices[region]
             flattened = [i for sub in polygon for i in sub]
-            color = tuple(np.random.choice(range(256), size=3))
+            color = self.voronoi_diagram.region_color_map[p]
+            if color == -1:
+                color = tuple(np.random.choice(range(256), size=3))
+            else:
+                color = self.color_list[color]
             draw.polygon(flattened, fill=color, outline=None)
 
         finite_segments = [[(a, b) for a, b in s] for s in finite_segments]
