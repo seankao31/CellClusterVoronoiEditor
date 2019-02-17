@@ -10,12 +10,14 @@ class VoronoiAnalysis:
             raise ValueError("Voronoi diagram is not 2-D.")
         self.voronoi = vor
 
-    def segments(self):
+    def segments(self, radius=None):
         vor = self.voronoi
         self.bounded_ridge_vertices = []
         self.augmented_vertices = vor.vertices.tolist()
         center = vor.points.mean(axis=0)
-        ptp_bound = vor.points.ptp(axis=0)
+        if radius is None:
+            ptp_bound = vor.points.ptp(axis=0)
+            radius = ptp_bound.max()
 
         finite_segments = []
         infinite_segments = []
@@ -33,7 +35,8 @@ class VoronoiAnalysis:
 
                 midpoint = vor.points[pointidx].mean(axis=0)
                 direction = np.sign(np.dot(midpoint - center, n)) * n
-                far_point = vor.vertices[i] + direction * ptp_bound.max()
+                far_point = vor.vertices[i] + direction * np.linalg.norm(
+                    np.absolute(vor.vertices[i])+np.array([radius, radius]))
 
                 infinite_segments.append([vor.vertices[i], far_point])
                 self.bounded_ridge_vertices.append(
@@ -43,7 +46,9 @@ class VoronoiAnalysis:
         return finite_segments, infinite_segments
 
     def finitePolygons(self, bbox):
-        finite_segments, infinite_segments = self.segments()
+        bbox = np.asarray(bbox)
+        radius = max(bbox[1]-bbox[0])
+        finite_segments, infinite_segments = self.segments(radius=radius)
         vor = self.voronoi
         self.bounded_regions = []
 
