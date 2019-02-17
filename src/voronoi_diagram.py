@@ -45,6 +45,7 @@ class VoronoiDiagram:
             raise IndexError()
         del self.points[index]
         del self.region_color_map[index]
+        self.is_prepared = False
 
     def editPoint(self, index, new_point):
         # Explicitly disallow -1 ~ -len
@@ -52,6 +53,7 @@ class VoronoiDiagram:
             raise IndexError()
         self.checkPointValid(new_point)
         self.points[index] = new_point
+        self.is_prepared = False
 
     def editRegionColor(self, index, new_color):
         # Explicitly disallow -1 ~ -len
