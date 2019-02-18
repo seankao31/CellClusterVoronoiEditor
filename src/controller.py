@@ -22,9 +22,23 @@ class Controller:
         self.task_view.displayImage(image)
 
     def taskEventHandler(self, event):
-        try:
-            self.model.voronoi_diagram.addPoint(event.x, event.y)
+        if self.main_view.action.get() == 0:
+            try:
+                self.model.voronoi_diagram.addPoint(event.x, event.y)
+                self.model.blendImageVoronoi()
+                self.taskDisplayImage(self.model.blend_image_voronoi)
+            except ValueError as e:
+                print(e)
+        elif self.main_view.action.get() == 1:
+            nearest = self.model.voronoi_diagram.findNearestPoint(
+                (event.x, event.y))
+            self.model.voronoi_diagram.deletePoint(nearest)
             self.model.blendImageVoronoi()
             self.taskDisplayImage(self.model.blend_image_voronoi)
-        except ValueError as e:
-            print(e)
+        elif self.main_view.action.get() == 2:
+            nearest = self.model.voronoi_diagram.findNearestPoint(
+                (event.x, event.y))
+            color = self.main_view.color_list_view.color.get()
+            self.model.voronoi_diagram.editRegionColor(nearest, color)
+            self.model.blendImageVoronoi()
+            self.taskDisplayImage(self.model.blend_image_voronoi)
