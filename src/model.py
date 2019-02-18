@@ -41,32 +41,38 @@ class Model:
         width, height = self.back_image.size
         draw_voronoi = Image.new('RGB', (width, height), 'black')
         draw = Draw(draw_voronoi)
-        voronoi = self.voronoi_diagram.voronoi
-        voronoi_analysis = VoronoiAnalysis(voronoi)
 
-        bbox = [(0, 0), (width, height)]
-        regions, vertices, finite_segments, infinite_segments = \
-            voronoi_analysis.finitePolygons(bbox)
-        for p, region in enumerate(regions):
-            polygon = vertices[region]
-            flattened = [i for sub in polygon for i in sub]
-            color = self.voronoi_diagram.region_color_map[p]
-            if color == -1:
-                color = tuple(np.random.choice(range(256), size=3))
-            else:
-                color = self.color_list[color]
-            draw.polygon(flattened, fill=color, outline=None)
+        try:
+            voronoi = self.voronoi_diagram.voronoi
+            voronoi_analysis = VoronoiAnalysis(voronoi)
 
-        finite_segments = [[(a, b) for a, b in s] for s in finite_segments]
-        infinite_segments = [[(a, b) for a, b in s] for s in infinite_segments]
+            bbox = [(0, 0), (width, height)]
+            regions, vertices, finite_segments, infinite_segments = \
+                voronoi_analysis.finitePolygons(bbox)
+            for p, region in enumerate(regions):
+                polygon = vertices[region]
+                flattened = [i for sub in polygon for i in sub]
+                color = self.voronoi_diagram.region_color_map[p]
+                if color == -1:
+                    color = tuple(np.random.choice(range(256), size=3))
+                else:
+                    color = self.color_list[color]
+                draw.polygon(flattened, fill=color, outline=None)
 
-        line_width = 4
-        for s in finite_segments:
-            draw.line(s, fill='red', width=line_width)
-        for s in infinite_segments:
-            draw.line(s, fill='red', width=line_width)
+            finite_segments = [[(a, b) for a, b in s]
+                               for s in finite_segments]
+            infinite_segments = [[(a, b) for a, b in s]
+                                 for s in infinite_segments]
 
-        for p in voronoi.points:
+            line_width = 4
+            for s in finite_segments:
+                draw.line(s, fill='red', width=line_width)
+            for s in infinite_segments:
+                draw.line(s, fill='red', width=line_width)
+        except (AttributeError, ValueError):
+            print('This error raises possibly due to too few points.')
+
+        for p in self.voronoi_diagram.points:
             draw.circle(p, radius=2, fill='red')
 
         self.blend_image_voronoi = Image.blend(

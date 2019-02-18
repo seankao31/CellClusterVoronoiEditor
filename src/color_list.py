@@ -1,5 +1,7 @@
 from collections import OrderedDict
 
+from pubsub import pub
+
 
 class ColorList:
     def __init__(self):
@@ -14,10 +16,13 @@ class ColorList:
 
     def __setitem__(self, key, val):
         self.colors[key] = val
+        pub.sendMessage('updateColorList')
 
     def __delitem__(self, key):
         del self.colors[key]
+        pub.sendMessage('updateColorList')
 
     def new(self):
         self.colors[self.id] = (0, 0, 0)
         self.id += 1
+        pub.sendMessage('updateColorList.newColor')

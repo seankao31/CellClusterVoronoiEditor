@@ -1,4 +1,6 @@
+from pubsub import pub
 from scipy.spatial import Voronoi, cKDTree
+from scipy.spatial.qhull import QhullError
 
 
 class VoronoiDiagram:
@@ -26,14 +28,15 @@ class VoronoiDiagram:
         self.finalPoints()
         self.generateVoronoi()
 
-    def addPoint(self, r, c):
+    def addPoint(self, r, c, color=-1):
         point = (r, c)
         self.checkPointValid(point)
         if point in self.points:
             raise ValueError('Cannot add duplicate point.')
         self.points.append(point)
-        self.region_color_map.append(-1)
+        self.region_color_map.append(color)
         self.is_prepared = False
+        pub.sendMessage('updateVoronoi')
 
     def addPoints(self, points):
         for r, c in points:
@@ -46,6 +49,7 @@ class VoronoiDiagram:
         del self.points[index]
         del self.region_color_map[index]
         self.is_prepared = False
+        pub.sendMessage('updateVoronoi')
 
     def editPoint(self, index, new_point):
         # Explicitly disallow -1 ~ -len
@@ -54,12 +58,14 @@ class VoronoiDiagram:
         self.checkPointValid(new_point)
         self.points[index] = new_point
         self.is_prepared = False
+        pub.sendMessage('updateVoronoi')
 
     def editRegionColor(self, index, new_color):
         # Explicitly disallow -1 ~ -len
         if index < 0:
             raise IndexError()
         self.region_color_map[index] = new_color
+        pub.sendMessage('updateVoronoi')
 
     def checkPointValid(self, point):
         if len(point) != 2:
@@ -73,7 +79,11 @@ class VoronoiDiagram:
         self.points_kdtree = cKDTree(self.points)
 
     def generateVoronoi(self):
-        self.voronoi = Voronoi(self.points)
+        try:
+            self.voronoi = Voronoi(self.points)
+        except QhullError as e:
+            self.voronoi = None
+            print(e.__class__.__name__)
 
     def findNearestPoint(self, query_point):
         dist, index = self.points_kdtree.query(query_point)
