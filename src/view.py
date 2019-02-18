@@ -54,6 +54,9 @@ class ColorListView(tk.Frame):
             default = list(color_list.keys())[0]
         self.color.set(default)
         self.update(color_list)
+        self.new_button = tk.Button(self,
+                                    text='New Color')
+        self.new_button.pack()
 
     def update(self, color_list):
         for index, color in color_list.items():
