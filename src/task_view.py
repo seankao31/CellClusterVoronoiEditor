@@ -15,4 +15,4 @@ class TaskView(tk.Toplevel):
         self.photo_image = photo_image = ImageTk.PhotoImage(image)
         self.width, self.height = width, height = image.size
         self.canvas.config(width=width, height=height)
-        self.canvas.create_image((0, 0), image=photo_image, anchor="nw")
+        self.canvas.create_image((0, 0), image=photo_image, anchor='nw')
