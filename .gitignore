@@ -1,6 +1,6 @@
 __pycache__/
+.pytest_cache/
 venv/
-.vscode/
 
 ch2/
 *.gif
@@ -8,3 +8,5 @@ ch2/
 *.czi
 *.jpg
 *.png
+
+.vscode/
