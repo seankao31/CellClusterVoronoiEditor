@@ -44,6 +44,14 @@ class Model:
         draw_voronoi = Image.new('RGB', (width, height), 'black')
         draw = Draw(draw_voronoi)
 
+        point_radius = self.display_option.point_radius
+        point_color = self.display_option.point_color
+        line_width = self.display_option.line_width
+        line_color = self.display_option.line_color
+        finite_segments = []
+        infinite_segments = []
+        self.blend_image_voronoi = self.back_image.convert('RGB')
+
         try:
             voronoi = self.voronoi_diagram.voronoi
             voronoi_analysis = VoronoiAnalysis(voronoi)
@@ -66,19 +74,17 @@ class Model:
             infinite_segments = [[(a, b) for a, b in s]
                                  for s in infinite_segments]
 
-            line_width = self.display_option.line_width
-            line_color = self.display_option.line_color
-            for s in finite_segments:
-                draw.line(s, fill=line_color, width=line_width)
-            for s in infinite_segments:
-                draw.line(s, fill=line_color, width=line_width)
+            self.blend_image_voronoi = Image.blend(
+                self.back_image.convert('RGB'), draw_voronoi, 0.3)
+
         except (AttributeError, ValueError):
             print('This error raises possibly due to too few points.')
 
-        point_radius = self.display_option.point_radius
-        point_color = self.display_option.point_color
+        draw = Draw(self.blend_image_voronoi)
+
+        for s in finite_segments:
+            draw.line(s, fill=line_color, width=line_width)
+        for s in infinite_segments:
+            draw.line(s, fill=line_color, width=line_width)
         for p in self.voronoi_diagram.points:
             draw.circle(p, radius=point_radius, fill=point_color)
-
-        self.blend_image_voronoi = Image.blend(
-                self.back_image.convert('RGB'), draw_voronoi, 0.5)
