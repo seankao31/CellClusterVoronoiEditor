@@ -9,4 +9,8 @@ ch2/
 *.jpg
 *.png
 
+*.c
+*.so
+build/
+
 .vscode/
