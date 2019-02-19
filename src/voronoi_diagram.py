@@ -86,5 +86,6 @@ class VoronoiDiagram:
             print(e.__class__.__name__)
 
     def findNearestPoint(self, query_point):
+        self.checkPointValid(query_point)
         dist, index = self.points_kdtree.query(query_point)
         return index

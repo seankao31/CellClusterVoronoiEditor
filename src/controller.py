@@ -1,5 +1,6 @@
 from pubsub import pub
 
+from src.menubar import Menubar
 from src.model import Model
 from src.task_view import TaskView
 from src.view import View
@@ -7,9 +8,13 @@ from src.view import View
 
 class Controller:
     def __init__(self, root):
+        root.config(menu=Menubar(root).menubar)
         self.model = Model()
         self.main_view = View(root)
         self.task_view = TaskView(self.main_view)
+        self.task_loaded = False
+        pub.subscribe(self.taskLoadImage, 'loadImageFile')
+        pub.subscribe(self.taskExportImage, 'exportImage')
         pub.subscribe(self.taskEventHandler, 'taskViewClick')
         pub.subscribe(self.model.color_list.new, 'newColor')
         pub.subscribe(self.updateTaskView, 'updateVoronoi')
@@ -19,13 +24,21 @@ class Controller:
         pub.subscribe(self.chooseNewColor, 'updateColorList.newColor')
 
     def taskLoadImage(self, image_file_name):
+        self.task_loaded = True
         self.model.setupTask(image_file_name)
         self.taskDisplayImage(self.model.back_image)
+
+    def taskExportImage(self, export_file_name):
+        if not self.task_loaded:
+            return
+        self.model.blend_image_voronoi.save(export_file_name)
 
     def taskDisplayImage(self, image):
         self.task_view.displayImage(image)
 
     def taskEventHandler(self, event):
+        if not self.task_loaded:
+            return
         if self.main_view.action.get() == 0:
             try:
                 color = self.main_view.color_list_view.color.get()
@@ -43,6 +56,8 @@ class Controller:
             self.model.voronoi_diagram.editRegionColor(nearest, color)
 
     def updateTaskView(self):
+        if not self.task_loaded:
+            return
         self.model.blendImageVoronoi()
         self.taskDisplayImage(self.model.blend_image_voronoi)
 
