@@ -3,6 +3,7 @@ import numpy as np
 from PIL import Image
 
 from src.color_list import ColorList
+from src.display_option import DisplayOption
 from src.draw import Draw
 from src.voronoi_analysis import VoronoiAnalysis
 from src.voronoi_diagram import VoronoiDiagram
@@ -12,6 +13,7 @@ class Model:
     def __init__(self):
         self.color_list = ColorList()
         self.image_refs = []
+        self.display_option = DisplayOption()
 
     @property
     def color_list(self):
@@ -64,16 +66,19 @@ class Model:
             infinite_segments = [[(a, b) for a, b in s]
                                  for s in infinite_segments]
 
-            line_width = 4
+            line_width = self.display_option.line_width
+            line_color = self.display_option.line_color
             for s in finite_segments:
-                draw.line(s, fill='red', width=line_width)
+                draw.line(s, fill=line_color, width=line_width)
             for s in infinite_segments:
-                draw.line(s, fill='red', width=line_width)
+                draw.line(s, fill=line_color, width=line_width)
         except (AttributeError, ValueError):
             print('This error raises possibly due to too few points.')
 
+        point_radius = self.display_option.point_radius
+        point_color = self.display_option.point_color
         for p in self.voronoi_diagram.points:
-            draw.circle(p, radius=2, fill='red')
+            draw.circle(p, radius=point_radius, fill=point_color)
 
         self.blend_image_voronoi = Image.blend(
                 self.back_image.convert('RGB'), draw_voronoi, 0.5)

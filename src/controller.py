@@ -1,5 +1,6 @@
 from pubsub import pub
 
+from src.display_option_view import DisplayOptionView
 from src.menubar import Menubar
 from src.model import Model
 from src.task_view import TaskView
@@ -11,6 +12,8 @@ class Controller:
         root.config(menu=Menubar(root).menubar)
         self.model = Model()
         self.main_view = View(root)
+        self.display_option_view = DisplayOptionView(
+            self.main_view, self.model.display_option)
         self.task_view = TaskView(self.main_view)
         self.task_loaded = False
         pub.subscribe(self.taskLoadImage, 'loadImageFile')
@@ -18,6 +21,7 @@ class Controller:
         pub.subscribe(self.taskEventHandler, 'taskViewClick')
         pub.subscribe(self.model.color_list.new, 'newColor')
         pub.subscribe(self.updateTaskView, 'updateVoronoi')
+        pub.subscribe(self.updateTaskView, 'updateDisplayOption')
         pub.subscribe(self.model.color_list.__setitem__, 'editColor')
         pub.subscribe(self.updateTaskView, 'updateColorList')
         pub.subscribe(self.updateMainView, 'updateColorList.newColor')
