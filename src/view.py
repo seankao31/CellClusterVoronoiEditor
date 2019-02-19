@@ -48,23 +48,43 @@ class ColorListView(tk.Frame):
                               text='Choose color:',
                               padx=0)
         self.label.pack()
+
+        self.new_button = tk.Button(self,
+                                    text='New Color',
+                                    command=self.newColor)
+        self.new_button.pack()
+
         self.color = tk.IntVar()
         default = 0
         if list(color_list.keys()):
             default = list(color_list.keys())[0]
         self.color.set(default)
+        self.canvas = tk.Canvas(self, borderwidth=0)
+        self.frame = tk.Frame(self.canvas)
+        self.vsb = tk.Scrollbar(
+            self, orient="vertical", command=self.canvas.yview)
+        self.canvas.configure(yscrollcommand=self.vsb.set)
+
+        self.vsb.pack(side="right", fill="y")
+        self.canvas.pack(side="left", fill="both", expand=True)
+        self.canvas.create_window((10, 10), window=self.frame, anchor="nw",
+                                  tags="self.frame")
+
+        self.frame.bind("<Configure>", self.onFrameConfigure)
+
         self.update(color_list)
-        self.new_button = tk.Button(self,
-                                    text='New Color',
-                                    command=self.newColor)
-        self.new_button.pack()
 
     def newColor(self):
         pub.sendMessage('newColor')
 
     def update(self, color_list):
         for index, color in color_list.items():
-            ColorEntry(self, index, color, self.color).pack()
+            ColorEntry(self.frame, index, color, self.color).pack()
+
+    def onFrameConfigure(self, event):
+        '''Reset the scroll region to encompass the inner frame'''
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"),
+                              width=250, height=500)
 
 
 class ColorEntry(tk.Frame):

@@ -1,5 +1,6 @@
 from collections import OrderedDict
 
+import numpy as np
 from pubsub import pub
 
 
@@ -23,6 +24,6 @@ class ColorList:
         pub.sendMessage('updateColorList')
 
     def new(self):
-        self.colors[self.id] = (0, 0, 0)
+        self.colors[self.id] = tuple(np.random.choice(range(256), size=3))
         self.id += 1
         pub.sendMessage('updateColorList.newColor')

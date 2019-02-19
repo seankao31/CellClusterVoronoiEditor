@@ -16,6 +16,7 @@ class Controller:
         pub.subscribe(self.model.color_list.__setitem__, 'editColor')
         pub.subscribe(self.updateTaskView, 'updateColorList')
         pub.subscribe(self.updateMainView, 'updateColorList.newColor')
+        pub.subscribe(self.chooseNewColor, 'updateColorList.newColor')
 
     def taskLoadImage(self, image_file_name):
         self.model.setupTask(image_file_name)
@@ -47,3 +48,7 @@ class Controller:
 
     def updateMainView(self):
         self.main_view.updateColorList(self.model.color_list)
+
+    def chooseNewColor(self):
+        self.main_view.color_list_view.color.set(
+            list(self.model.color_list.keys())[-1])
