@@ -10,7 +10,8 @@ class ColorList:
         self.id = 0
 
     def __getattr__(self, name):
-        return self.colors.__getattribute__(name)
+        # avoid recursion
+        return super().__getattribute__('colors').__getattribute__(name)
 
     def __getitem__(self, key):
         return self.colors[key]

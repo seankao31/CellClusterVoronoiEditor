@@ -12,8 +12,9 @@ from src.voronoi_diagram import VoronoiDiagram
 class Model:
     def __init__(self):
         self.color_list = ColorList()
-        self.image_refs = []
         self.display_option = DisplayOption()
+        self.voronoi_diagram = None
+        self.back_image_file_name = None
 
     @property
     def color_list(self):
@@ -31,7 +32,12 @@ class Model:
     def voronoi_diagram(self, val):
         self._voronoi_diagram = val
 
+    def loadImage(self, image_file_name):
+        self.back_image_file_name = image_file_name
+        self.back_image = self.createImage(image_file_name)
+
     def setupTask(self, image_file_name):
+        self.back_image_file_name = image_file_name
         self.back_image = image = self.createImage(image_file_name)
         width, height = image.size
         self.voronoi_diagram = VoronoiDiagram(h=height, w=width)

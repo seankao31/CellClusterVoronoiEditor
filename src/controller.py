@@ -1,3 +1,5 @@
+import pickle
+
 from pubsub import pub
 
 from src.display_option_view import DisplayOptionView
@@ -16,8 +18,10 @@ class Controller:
             self.main_view, self.model.display_option)
         self.task_view = TaskView(self.main_view)
         self.task_loaded = False
+        pub.subscribe(self.openFile, 'openFile')
         pub.subscribe(self.taskLoadImage, 'loadImageFile')
         pub.subscribe(self.taskExportImage, 'exportImage')
+        pub.subscribe(self.taskSaveFile, 'saveFile')
         pub.subscribe(self.taskEventHandler, 'taskViewClick')
         pub.subscribe(self.model.color_list.new, 'newColor')
         pub.subscribe(self.updateTaskView, 'updateVoronoi')
@@ -26,6 +30,24 @@ class Controller:
         pub.subscribe(self.updateTaskView, 'updateColorList')
         pub.subscribe(self.updateMainView, 'updateColorList.newColor')
         pub.subscribe(self.chooseNewColor, 'updateColorList.newColor')
+
+    def openFile(self, open_file_name):
+        self.task_loaded, \
+            self.model.color_list, \
+            self.model.voronoi_diagram, \
+            back_image_file_name, \
+            self.model.display_option.point_radius, \
+            self.model.display_option.point_color, \
+            self.model.display_option.line_width, \
+            self.model.display_option.line_color, \
+            self.model.display_option.region_alpha = \
+            pickle.load(open(open_file_name, 'rb'))
+        pub.subscribe(self.model.color_list.new, 'newColor')
+        pub.subscribe(self.model.color_list.__setitem__, 'editColor')
+        self.model.loadImage(back_image_file_name)
+        self.model.display_option.setVariables()
+        self.updateTaskView()
+        self.updateMainView()
 
     def taskLoadImage(self, image_file_name):
         self.task_loaded = True
@@ -36,6 +58,18 @@ class Controller:
         if not self.task_loaded:
             return
         self.model.blend_image_voronoi.save(export_file_name)
+
+    def taskSaveFile(self, save_file_name):
+        with open(save_file_name, 'wb') as f:
+            pickle.dump([self.task_loaded,
+                         self.model.color_list,
+                         self.model.voronoi_diagram,
+                         self.model.back_image_file_name,
+                         self.model.display_option.point_radius,
+                         self.model.display_option.point_color,
+                         self.model.display_option.line_width,
+                         self.model.display_option.line_color,
+                         self.model.display_option.region_alpha], f)
 
     def taskDisplayImage(self, image):
         self.task_view.displayImage(image)

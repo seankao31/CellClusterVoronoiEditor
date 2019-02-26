@@ -33,6 +33,16 @@ class DisplayOption:
         self.v_region_alpha.set(str(self.region_alpha))
         self.v_region_alpha.trace('w', lambda *_: self.setRegionAlpha())
 
+    def setVariables(self):
+        self.v_point_radius.set(str(self.point_radius))
+        self.v_line_width.set(str(self.line_width))
+        self.v_region_alpha.set(str(self.region_alpha))
+        point_color = self.point_color
+        line_color = self.line_color
+        for i in range(3):
+            self.v_point_color[i].set(str(point_color[i]))
+            self.v_line_color[i].set(str(line_color[i]))
+
     def setPointRadius(self):
         v = 0
         try:

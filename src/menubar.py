@@ -35,7 +35,9 @@ class Menubar:
         self.menubar.add_cascade(label="File", menu=self.file_menu)
 
     def file_open(self):
-        pass
+        name = filedialog.askopenfilename(
+            filetypes=[('cvdata files', '*.cvdata')])
+        pub.sendMessage('openFile', open_file_name=name)
 
     def file_load_image(self):
         name = filedialog.askopenfilename(
@@ -43,7 +45,10 @@ class Menubar:
         pub.sendMessage('loadImageFile', image_file_name=name)
 
     def file_save(self):
-        pass
+        name = filedialog.asksaveasfilename(
+            defaultextension='.cvdata',
+            filetypes=[('cvdata files', '*.cvdata')])
+        pub.sendMessage('saveFile', save_file_name=name)
 
     def file_save_as(self):
         pass
