@@ -20,15 +20,17 @@ class Menubar:
         ]
         self.file_menu = tk.Menu(self.menubar)
         self.file_menu.add_command(
-            labe='Open', command=self.file_open)
+            label='Open', command=self.file_open)
         self.file_menu.add_command(
-            label="Load image", command=self.file_load_image)
+            label='Load image', command=self.file_load_image)
         self.file_menu.add_command(
-            label="Save", command=self.file_save)
+            label='Save', command=self.file_save)
         self.file_menu.add_command(
-            label="Save as...", command=self.file_save_as)
+            label='Save as...', command=self.file_save_as)
         self.file_menu.add_command(
-            label="Export", command=self.file_export)
+            label='Export Image', command=self.file_export_image)
+        self.file_menu.add_command(
+            label='Export Points', command=self.file_export_points)
 
         self.file_menu.add_separator()
 
@@ -60,10 +62,15 @@ class Menubar:
         self.save_file_name = name
         pub.sendMessage('saveFile', save_file_name=name)
 
-    def file_export(self):
+    def file_export_image(self):
         name = filedialog.asksaveasfilename(
             defaultextension='.tiff', filetypes=self.image_file_types)
         pub.sendMessage('exportImage', export_file_name=name)
+
+    def file_export_points(self):
+        name = filedialog.asksaveasfilename(
+            defaultextension='.json', filetypes=[('json files', '*.json')])
+        pub.sendMessage('exportPoints', export_file_name=name)
 
     def editMenu(self):
         self.edit_menu = tk.Menu(self.menubar)

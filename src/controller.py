@@ -1,4 +1,5 @@
 from functools import partial
+import json
 import pickle
 
 from pubsub import pub
@@ -24,6 +25,7 @@ class Controller:
         pub.subscribe(self.openFile, 'openFile')
         pub.subscribe(self.taskLoadImage, 'loadImageFile')
         pub.subscribe(self.taskExportImage, 'exportImage')
+        pub.subscribe(self.taskExportPoints, 'exportPoints')
         pub.subscribe(self.taskSaveFile, 'saveFile')
         pub.subscribe(self.model.color_list.new, 'newColor')
         pub.subscribe(self.updateTaskView, 'updateVoronoi')
@@ -77,6 +79,12 @@ class Controller:
         if not self.task_loaded:
             return
         self.model.blend_image_voronoi.save(export_file_name)
+
+    def taskExportPoints(self, export_file_name):
+        if not self.task_loaded:
+            return
+        with open(export_file_name, 'w') as outfile:
+            json.dump(self.model.voronoi_diagram.points, outfile)
 
     def taskSaveFile(self, save_file_name):
         with open(save_file_name, 'wb') as f:
