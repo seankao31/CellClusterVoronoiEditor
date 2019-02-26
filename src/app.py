@@ -1,4 +1,4 @@
-from src.controller import Controller
+from controller import Controller
 
 
 class App:

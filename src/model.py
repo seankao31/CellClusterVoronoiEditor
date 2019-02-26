@@ -2,11 +2,11 @@ import numpy as np
 
 from PIL import Image
 
-from src.color_list import ColorList
-from src.display_option import DisplayOption
-from src.draw import Draw
-from src.voronoi_analysis import VoronoiAnalysis
-from src.voronoi_diagram import VoronoiDiagram
+from color_list import ColorList
+from display_option import DisplayOption
+from draw import Draw
+from voronoi_analysis import VoronoiAnalysis
+from voronoi_diagram import VoronoiDiagram
 
 
 class Model:

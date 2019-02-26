@@ -4,12 +4,12 @@ import pickle
 
 from pubsub import pub
 
-from src.display_option_view import DisplayOptionView
-from src.menubar import Menubar
-from src.model import Model
-from src.task_view import TaskView
-from src.undo_redo import Action, UndoRedo
-from src.view import View
+from display_option_view import DisplayOptionView
+from menubar import Menubar
+from model import Model
+from task_view import TaskView
+from undo_redo import Action, UndoRedo
+from view import View
 
 
 class Controller:
