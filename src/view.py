@@ -12,6 +12,9 @@ class View(tk.Toplevel):
         self.actionList()
         self.color_list_view = None
 
+    def switchAction(self, action):
+        self.action.set(action)
+
     def actionList(self):
         self.action = tk.IntVar()
         self.action.set(0)  # initializing the choice, i.e. Python

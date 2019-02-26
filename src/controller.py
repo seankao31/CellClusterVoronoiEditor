@@ -1,3 +1,4 @@
+from functools import partial
 import pickle
 
 from pubsub import pub
@@ -6,6 +7,7 @@ from src.display_option_view import DisplayOptionView
 from src.menubar import Menubar
 from src.model import Model
 from src.task_view import TaskView
+from src.undo_redo import Action, UndoRedo
 from src.view import View
 
 
@@ -13,6 +15,7 @@ class Controller:
     def __init__(self, root):
         root.config(menu=Menubar(root).menubar)
         self.model = Model()
+        self.undo_redo = UndoRedo()
         self.main_view = View(root)
         self.display_option_view = DisplayOptionView(
             self.main_view, self.model.display_option)
@@ -30,6 +33,9 @@ class Controller:
         pub.subscribe(self.updateTaskView, 'updateColorList')
         pub.subscribe(self.updateMainView, 'updateColorList.newColor')
         pub.subscribe(self.chooseNewColor, 'updateColorList.newColor')
+        pub.subscribe(self.undo_redo.undo, 'undo')
+        pub.subscribe(self.undo_redo.redo, 'redo')
+        pub.subscribe(self.main_view.switchAction, 'switchAction')
 
     def openFile(self, open_file_name):
         self.task_loaded, \
@@ -77,21 +83,73 @@ class Controller:
     def taskEventHandler(self, event):
         if not self.task_loaded:
             return
+        try:
+            self.model.voronoi_diagram.checkPointValid((event.x, event.y))
+        except ValueError:
+            return
         if self.main_view.action.get() == 0:
-            try:
-                color = self.main_view.color_list_view.color.get()
-                self.model.voronoi_diagram.addPoint(event.x, event.y, color)
-            except ValueError as e:
-                print(e)
+            self.addPoint(event)
         elif self.main_view.action.get() == 1:
-            nearest = self.model.voronoi_diagram.findNearestPoint(
-                (event.x, event.y))
-            self.model.voronoi_diagram.deletePoint(nearest)
+            self.deletePoint(event)
         elif self.main_view.action.get() == 2:
-            nearest = self.model.voronoi_diagram.findNearestPoint(
-                (event.x, event.y))
+            self.changeColor(event)
+
+    def addPoint(self, event):
+        try:
             color = self.main_view.color_list_view.color.get()
-            self.model.voronoi_diagram.editRegionColor(nearest, color)
+            self.model.voronoi_diagram.addPoint(event.x, event.y, color)
+        except ValueError as e:
+            print(e)
+            return
+        action = Action(undo=partial(self.executeDeletePoint, event=event),
+                        redo=partial(self.model.voronoi_diagram.addPoint,
+                                     r=event.x,
+                                     c=event.y,
+                                     color=color))
+        self.undo_redo.newAction(action)
+
+    def executeDeletePoint(self, event):
+        nearest = self.model.voronoi_diagram.findNearestPoint(
+            (event.x, event.y))
+        self.model.voronoi_diagram.deletePoint(nearest)
+
+    def deletePoint(self, event):
+        nearest = self.model.voronoi_diagram.findNearestPoint(
+            (event.x, event.y))
+        color = self.model.voronoi_diagram.region_color_map[nearest]
+        point = self.model.voronoi_diagram.points[nearest]
+        # event.x = point[0]
+        # event.y = point[1]
+        action = Action(undo=partial(self.model.voronoi_diagram.addPoint,
+                                     r=point[0],
+                                     c=point[1],
+                                     color=color),
+                        redo=partial(self.executeDeletePoint,
+                                     event=event))
+        self.undo_redo.newAction(action)
+        self.model.voronoi_diagram.deletePoint(nearest)
+
+    def executeChangeColor(self, event, color):
+        nearest = self.model.voronoi_diagram.findNearestPoint(
+            (event.x, event.y))
+        self.model.voronoi_diagram.editRegionColor(nearest, color)
+
+    def changeColor(self, event):
+        nearest = self.model.voronoi_diagram.findNearestPoint(
+            (event.x, event.y))
+        color = self.main_view.color_list_view.color.get()
+        old_color = self.model.voronoi_diagram.region_color_map[nearest]
+        # point = self.model.voronoi_diagram.points[nearest]
+        # event.x = point[0]
+        # event.y = point[1]
+        action = Action(undo=partial(self.executeChangeColor,
+                                     event=event,
+                                     color=old_color),
+                        redo=partial(self.executeChangeColor,
+                                     event=event,
+                                     color=color))
+        self.undo_redo.newAction(action)
+        self.model.voronoi_diagram.editRegionColor(nearest, color)
 
     def updateTaskView(self):
         if not self.task_loaded:

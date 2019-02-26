@@ -8,6 +8,7 @@ class Menubar:
     def __init__(self, root):
         self.menubar = tk.Menu(root)
         self.fileMenu(root)
+        self.editMenu()
         self.save_file_name = None
 
     def fileMenu(self, root):
@@ -63,3 +64,18 @@ class Menubar:
         name = filedialog.asksaveasfilename(
             defaultextension='.tiff', filetypes=self.image_file_types)
         pub.sendMessage('exportImage', export_file_name=name)
+
+    def editMenu(self):
+        self.edit_menu = tk.Menu(self.menubar)
+        self.edit_menu.add_command(
+            labe='Undo', command=self.edit_undo)
+        self.edit_menu.add_command(
+            label="Redo", command=self.edit_redo)
+
+        self.menubar.add_cascade(label="Edit", menu=self.edit_menu)
+
+    def edit_undo(self):
+        pub.sendMessage('undo')
+
+    def edit_redo(self):
+        pub.sendMessage('redo')
