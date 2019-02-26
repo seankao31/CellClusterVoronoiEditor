@@ -9,6 +9,7 @@ class DisplayOption:
         self.point_color = (255, 0, 0)
         self.line_width = 4
         self.line_color = (255, 0, 0)
+        self.region_alpha = 0.5
 
         self.v_point_radius = tk.StringVar()
         self.v_point_radius.set(str(self.point_radius))
@@ -27,6 +28,10 @@ class DisplayOption:
         for i in range(3):
             self.v_line_color[i].set(str(self.line_color[i]))
             self.v_line_color[i].trace('w', lambda *_: self.setLineColor())
+
+        self.v_region_alpha = tk.StringVar()
+        self.v_region_alpha.set(str(self.region_alpha))
+        self.v_region_alpha.trace('w', lambda *_: self.setRegionAlpha())
 
     def setPointRadius(self):
         v = 0
@@ -80,4 +85,17 @@ class DisplayOption:
             entry.config(fg='black')
         self.line_color = \
             tuple(int(self.v_line_color[i].get()) for i in range(3))
+        pub.sendMessage('updateDisplayOption')
+
+    def setRegionAlpha(self):
+        v = 0
+        try:
+            v = float(self.v_region_alpha.get())
+            if v < 0 or v > 1:
+                raise ValueError
+        except ValueError:
+            self.view.region_alpha_entry.config(fg='red')
+            return
+        self.view.region_alpha_entry.config(fg='black')
+        self.region_alpha = v
         pub.sendMessage('updateDisplayOption')

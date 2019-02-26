@@ -23,6 +23,10 @@ class DisplayOptionView(tk.Toplevel):
             self.RGBEntry(text='Line Color: ',
                           vars=display_option.v_line_color)
 
+        self.region_alpha_entry = \
+            self.LabelEntry(text='Region Alpha: ',
+                            var=display_option.v_region_alpha)
+
     def LabelEntry(self, text, var):
         frame = tk.Frame(self)
         label = tk.Label(frame, text=text)

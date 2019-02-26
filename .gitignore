@@ -12,5 +12,6 @@ ch2/
 *.c
 *.so
 build/
+dist/
 
 .vscode/

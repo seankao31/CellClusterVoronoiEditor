@@ -48,6 +48,7 @@ class Model:
         point_color = self.display_option.point_color
         line_width = self.display_option.line_width
         line_color = self.display_option.line_color
+        region_alpha = self.display_option.region_alpha
         finite_segments = []
         infinite_segments = []
         self.blend_image_voronoi = self.back_image.convert('RGB')
@@ -75,7 +76,9 @@ class Model:
                                  for s in infinite_segments]
 
             self.blend_image_voronoi = Image.blend(
-                self.back_image.convert('RGB'), draw_voronoi, 0.3)
+                self.back_image.convert('RGB'),
+                draw_voronoi,
+                region_alpha)
 
         except (AttributeError, ValueError):
             print('This error raises possibly due to too few points.')
