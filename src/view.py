@@ -17,9 +17,9 @@ class View(tk.Toplevel):
         self.action.set(0)  # initializing the choice, i.e. Python
 
         choices = [
-            ("addPoint"),
-            ("deletePoint"),
-            ("changeColor")
+            ("Add Point"),
+            ("Delete Point"),
+            ("Change Color")
         ]
 
         tk.Label(self,
