@@ -32,10 +32,9 @@ class Controller:
         pub.subscribe(self.updateTaskView, 'updateColorList')
         pub.subscribe(self.updateMainView, 'updateColorList.newColor')
         pub.subscribe(self.chooseNewColor, 'updateColorList.newColor')
-        self.task_view.bind('<Button-1>', self.taskEventHandler)
-        # self.task_view.bind("<ButtonPress-1>", self.on_start)
-        # self.task_view.bind("<B1-Motion>", self.on_drag)
-        # self.task_view.bind("<ButtonRelease-1>", self.on_drop)
+        # self.task_view.bind('<Button-1>', self.taskEventHandler)
+        self.task_view.bind("<ButtonPress-1>", self.taskEventHandler)
+        self.task_view.bind("<B1-Motion>", self.dragOnDrag)
         self.task_view.bind('<Command-z>', lambda *_:
                             self.undo_redo.undo())
         self.task_view.bind('<Command-Z>', lambda *_:
@@ -106,9 +105,33 @@ class Controller:
         elif self.main_view.action.get() == 1:
             self.deletePoint(event)
         elif self.main_view.action.get() == 2:
-            pass
+            self.dragOnStart(event)
         elif self.main_view.action.get() == 3:
             self.changeColor(event)
+
+    def dragOnStart(self, event):
+        if not self.task_loaded:
+            return
+        try:
+            self.model.voronoi_diagram.checkPointValid((event.x, event.y))
+        except ValueError:
+            return
+        if self.main_view.action.get() != 2:
+            return
+        self._drag_start = (event.x, event.y)
+        self._drag_nearest = self.model.voronoi_diagram.findNearestPoint(
+            self._drag_start)
+        self._drag_origin = \
+            self.model.voronoi_diagram.points[self._drag_nearest]
+
+    def dragOnDrag(self, event):
+        if self.main_view.action.get() != 2:
+            return
+        delta = (event.x - self._drag_start[0],
+                 event.y - self._drag_start[1])
+        new_point = (self._drag_origin[0] + delta[0],
+                     self._drag_origin[1] + delta[1])
+        self.model.voronoi_diagram.editPoint(self._drag_nearest, new_point)
 
     def addPoint(self, event):
         try:
