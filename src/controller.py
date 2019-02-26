@@ -25,7 +25,6 @@ class Controller:
         pub.subscribe(self.taskLoadImage, 'loadImageFile')
         pub.subscribe(self.taskExportImage, 'exportImage')
         pub.subscribe(self.taskSaveFile, 'saveFile')
-        pub.subscribe(self.taskEventHandler, 'taskViewClick')
         pub.subscribe(self.model.color_list.new, 'newColor')
         pub.subscribe(self.updateTaskView, 'updateVoronoi')
         pub.subscribe(self.updateTaskView, 'updateDisplayOption')
@@ -33,9 +32,24 @@ class Controller:
         pub.subscribe(self.updateTaskView, 'updateColorList')
         pub.subscribe(self.updateMainView, 'updateColorList.newColor')
         pub.subscribe(self.chooseNewColor, 'updateColorList.newColor')
-        pub.subscribe(self.undo_redo.undo, 'undo')
-        pub.subscribe(self.undo_redo.redo, 'redo')
-        pub.subscribe(self.main_view.switchAction, 'switchAction')
+        self.task_view.bind('<Button-1>', self.taskEventHandler)
+        # self.task_view.bind("<ButtonPress-1>", self.on_start)
+        # self.task_view.bind("<B1-Motion>", self.on_drag)
+        # self.task_view.bind("<ButtonRelease-1>", self.on_drop)
+        self.task_view.bind('<Command-z>', lambda *_:
+                            self.undo_redo.undo())
+        self.task_view.bind('<Command-Z>', lambda *_:
+                            self.undo_redo.redo())
+        self.task_view.bind('<Command-a>', lambda *_:
+                            self.main_view.switchAction(0))
+        self.task_view.bind('<Command-d>', lambda *_:
+                            self.main_view.switchAction(1))
+        self.task_view.bind('<Command-e>', lambda *_:
+                            self.main_view.switchAction(2))
+        self.task_view.bind('<Command-c>', lambda *_:
+                            self.main_view.switchAction(3))
+        self.task_view.bind('<Command-n>', lambda *_:
+                            self.model.color_list.new())
 
     def openFile(self, open_file_name):
         self.task_loaded, \
@@ -92,6 +106,8 @@ class Controller:
         elif self.main_view.action.get() == 1:
             self.deletePoint(event)
         elif self.main_view.action.get() == 2:
+            pass
+        elif self.main_view.action.get() == 3:
             self.changeColor(event)
 
     def addPoint(self, event):

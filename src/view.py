@@ -22,6 +22,7 @@ class View(tk.Toplevel):
         choices = [
             ("Add Point"),
             ("Delete Point"),
+            ("Edit Point"),
             ("Change Color")
         ]
 
