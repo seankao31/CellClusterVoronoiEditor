@@ -8,6 +8,7 @@ class Menubar:
     def __init__(self, root):
         self.menubar = tk.Menu(root)
         self.fileMenu(root)
+        self.save_file_name = None
 
     def fileMenu(self, root):
         self.image_file_types = [
@@ -37,6 +38,7 @@ class Menubar:
     def file_open(self):
         name = filedialog.askopenfilename(
             filetypes=[('cvdata files', '*.cvdata')])
+        self.save_file_name = name
         pub.sendMessage('openFile', open_file_name=name)
 
     def file_load_image(self):
@@ -45,13 +47,17 @@ class Menubar:
         pub.sendMessage('loadImageFile', image_file_name=name)
 
     def file_save(self):
+        if self.save_file_name is None:
+            self.file_save_as()
+        else:
+            pub.sendMessage('saveFile', save_file_name=self.save_file_name)
+
+    def file_save_as(self):
         name = filedialog.asksaveasfilename(
             defaultextension='.cvdata',
             filetypes=[('cvdata files', '*.cvdata')])
+        self.save_file_name = name
         pub.sendMessage('saveFile', save_file_name=name)
-
-    def file_save_as(self):
-        pass
 
     def file_export(self):
         name = filedialog.asksaveasfilename(
