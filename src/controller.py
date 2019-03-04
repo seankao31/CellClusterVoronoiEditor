@@ -20,8 +20,7 @@ class Controller:
         self.main_view = View(root)
         self.display_option_view = DisplayOptionView(
             self.main_view, self.model.display_option)
-        self.task_view = TaskView(self.main_view)
-        self.task_loaded = False
+        self.taskViewInit()
         pub.subscribe(self.openFile, 'openFile')
         pub.subscribe(self.taskLoadImage, 'loadImageFile')
         pub.subscribe(self.taskExportImage, 'exportImage')
@@ -37,24 +36,10 @@ class Controller:
         pub.subscribe(self.undo_redo.undo, 'undo')
         pub.subscribe(self.undo_redo.redo, 'redo')
         # self.task_view.bind('<Button-1>', self.taskEventHandler)
-        self.task_view.bind("<ButtonPress-1>", self.taskEventHandler)
-        self.task_view.bind("<B1-Motion>", self.dragOnDrag)
-        self.task_view.bind('<Command-z>', lambda *_:
-                            self.undo_redo.undo())
-        self.task_view.bind('<Command-Z>', lambda *_:
-                            self.undo_redo.redo())
-        self.task_view.bind('<Command-a>', lambda *_:
-                            self.main_view.switchAction(0))
-        self.task_view.bind('<Command-d>', lambda *_:
-                            self.main_view.switchAction(1))
-        self.task_view.bind('<Command-e>', lambda *_:
-                            self.main_view.switchAction(2))
-        self.task_view.bind('<Command-c>', lambda *_:
-                            self.main_view.switchAction(3))
-        self.task_view.bind('<Command-n>', lambda *_:
-                            self.model.color_list.new())
 
     def openFile(self, open_file_name):
+        if self.task_view.window_deleted:
+            self.taskViewInit()
         self.task_loaded, \
             self.model.color_list, \
             self.model.voronoi_diagram, \
@@ -72,7 +57,29 @@ class Controller:
         self.updateTaskView()
         self.updateMainView()
 
+    def taskViewInit(self):
+        self.task_view = TaskView(self.main_view)
+        self.task_loaded = False
+        self.task_view.bind("<ButtonPress-1>", self.taskEventHandler)
+        self.task_view.bind("<B1-Motion>", self.dragOnDrag)
+        self.task_view.bind('<Command-z>', lambda *_:
+                            self.undo_redo.undo())
+        self.task_view.bind('<Command-Z>', lambda *_:
+                            self.undo_redo.redo())
+        self.task_view.bind('<Command-a>', lambda *_:
+                            self.main_view.switchAction(0))
+        self.task_view.bind('<Command-d>', lambda *_:
+                            self.main_view.switchAction(1))
+        self.task_view.bind('<Command-e>', lambda *_:
+                            self.main_view.switchAction(2))
+        self.task_view.bind('<Command-c>', lambda *_:
+                            self.main_view.switchAction(3))
+        self.task_view.bind('<Command-n>', lambda *_:
+                            self.model.color_list.new())
+
     def taskLoadImage(self, image_file_name):
+        if self.task_view.window_deleted:
+            self.taskViewInit()
         self.task_loaded = True
         self.model.setupTask(image_file_name)
         self.taskDisplayImage(self.model.back_image)
