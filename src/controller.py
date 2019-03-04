@@ -34,6 +34,8 @@ class Controller:
         pub.subscribe(self.updateTaskView, 'updateColorList')
         pub.subscribe(self.updateMainView, 'updateColorList.newColor')
         pub.subscribe(self.chooseNewColor, 'updateColorList.newColor')
+        pub.subscribe(self.undo_redo.undo, 'undo')
+        pub.subscribe(self.undo_redo.redo, 'redo')
         # self.task_view.bind('<Button-1>', self.taskEventHandler)
         self.task_view.bind("<ButtonPress-1>", self.taskEventHandler)
         self.task_view.bind("<B1-Motion>", self.dragOnDrag)
