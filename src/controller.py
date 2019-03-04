@@ -38,6 +38,8 @@ class Controller:
         # self.task_view.bind('<Button-1>', self.taskEventHandler)
 
     def openFile(self, open_file_name):
+        if self.task_view.window_deleted:
+            self.taskViewInit()
         self.task_loaded, \
             self.model.color_list, \
             self.model.voronoi_diagram, \
