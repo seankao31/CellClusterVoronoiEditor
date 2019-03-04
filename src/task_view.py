@@ -1,7 +1,6 @@
 import tkinter as tk
 
 from PIL import ImageTk
-from pubsub import pub
 
 
 class TaskView(tk.Toplevel):
@@ -11,6 +10,12 @@ class TaskView(tk.Toplevel):
         self.canvas = tk.Canvas(self)
         self.canvas.pack(side='left')
         self.resizable(False, False)
+        self.window_deleted = False
+        self.protocol('WM_DELETE_WINDOW', self.onDelete)
+
+    def onDelete(self):
+        self.window_deleted = True
+        self.destroy()
 
     def displayImage(self, image):
         self.photo_image = photo_image = ImageTk.PhotoImage(image)
