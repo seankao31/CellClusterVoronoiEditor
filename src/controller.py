@@ -159,8 +159,8 @@ class Controller:
             return
         action = Action(undo=partial(self.executeDeletePoint, event=event),
                         redo=partial(self.model.voronoi_diagram.addPoint,
-                                     r=event.x,
-                                     c=event.y,
+                                     x=event.x,
+                                     y=event.y,
                                      color=color))
         self.undo_redo.newAction(action)
 
@@ -177,8 +177,8 @@ class Controller:
         # event.x = point[0]
         # event.y = point[1]
         action = Action(undo=partial(self.model.voronoi_diagram.addPoint,
-                                     r=point[0],
-                                     c=point[1],
+                                     x=point[0],
+                                     y=point[1],
                                      color=color),
                         redo=partial(self.executeDeletePoint,
                                      event=event))

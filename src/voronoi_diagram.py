@@ -28,8 +28,8 @@ class VoronoiDiagram:
         self.finalPoints()
         self.generateVoronoi()
 
-    def addPoint(self, r, c, color=-1):
-        point = (r, c)
+    def addPoint(self, x, y, color=-1):
+        point = (x, y)
         self.checkPointValid(point)
         if point in self.points:
             raise ValueError('Cannot add duplicate point.')
@@ -39,8 +39,8 @@ class VoronoiDiagram:
         pub.sendMessage('updateVoronoi')
 
     def addPoints(self, points):
-        for r, c in points:
-            self.addPoint(r, c)
+        for x, y in points:
+            self.addPoint(x, y)
 
     def deletePoint(self, index):
         # Explicitly disallow -1 ~ -len
@@ -70,9 +70,9 @@ class VoronoiDiagram:
     def checkPointValid(self, point):
         if len(point) != 2:
             raise ValueError('Point length should be 2.')
-        r = point[0]
-        c = point[1]
-        if r < 0 or r >= self.h or c < 0 or c >= self.w:
+        x = point[0]
+        y = point[1]
+        if x < 0 or x >= self.w or y < 0 or y >= self.h:
             raise ValueError('Point out of range.')
 
     def finalPoints(self):
