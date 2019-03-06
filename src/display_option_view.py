@@ -27,6 +27,10 @@ class DisplayOptionView(tk.Toplevel):
             self.LabelEntry(text='Region Alpha: ',
                             var=display_option.v_region_alpha)
 
+        self.scale_entry = \
+            self.LabelEntry(text='Anti-alias Scale: ',
+                            var=display_option.v_scale)
+
     def LabelEntry(self, text, var):
         frame = tk.Frame(self)
         label = tk.Label(frame, text=text)

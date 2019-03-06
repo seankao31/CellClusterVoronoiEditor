@@ -89,11 +89,25 @@ class Model:
         except (AttributeError, ValueError):
             print('This error raises possibly due to too few points.')
 
+        scale = self.display_option.scale  # for anti-aliasing
+
+        self.blend_image_voronoi = \
+            self.blend_image_voronoi.resize((width*scale, height*scale))
+
         draw = Draw(self.blend_image_voronoi)
 
         for s in finite_segments:
-            draw.line(s, fill=line_color, width=line_width)
+            ss = [tuple(e * scale for e in p) for p in s]
+            draw.line(ss, fill=line_color, width=line_width*scale)
         for s in infinite_segments:
-            draw.line(s, fill=line_color, width=line_width)
+            ss = [tuple(e * scale for e in p) for p in s]
+            draw.line(ss, fill=line_color, width=line_width*scale)
+
+        self.blend_image_voronoi = \
+            self.blend_image_voronoi.resize((width, height),
+                                            resample=Image.LANCZOS)
+
+        draw = Draw(self.blend_image_voronoi)
+
         for p in self.voronoi_diagram.points:
             draw.circle(p, radius=point_radius, fill=point_color)
