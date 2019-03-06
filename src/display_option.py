@@ -10,6 +10,7 @@ class DisplayOption:
         self.line_width = 4
         self.line_color = (255, 0, 0)
         self.region_alpha = 0.5
+        self.scale = 2
 
         self.v_point_radius = tk.StringVar()
         self.v_point_radius.set(str(self.point_radius))
@@ -32,6 +33,10 @@ class DisplayOption:
         self.v_region_alpha = tk.StringVar()
         self.v_region_alpha.set(str(self.region_alpha))
         self.v_region_alpha.trace('w', lambda *_: self.setRegionAlpha())
+
+        self.v_scale = tk.StringVar()
+        self.v_scale.set(str(self.scale))
+        self.v_scale.trace('w', lambda *_: self.setScale())
 
     def setVariables(self):
         self.v_point_radius.set(str(self.point_radius))
@@ -108,4 +113,17 @@ class DisplayOption:
             return
         self.view.region_alpha_entry.config(fg='black')
         self.region_alpha = v
+        pub.sendMessage('updateDisplayOption')
+
+    def setScale(self):
+        v = 0
+        try:
+            v = int(self.v_scale.get())
+            if v <= 0:
+                raise ValueError
+        except ValueError:
+            self.view.scale_entry.config(fg='red')
+            return
+        self.view.scale_entry.config(fg='black')
+        self.scale = v
         pub.sendMessage('updateDisplayOption')
