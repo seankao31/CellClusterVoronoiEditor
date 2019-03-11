@@ -38,7 +38,8 @@ class DisplayOptionView(tk.Toplevel):
         choices = [
             ("Display Point"),
             ("Display Area"),
-            ("Display Color")
+            ("Display Color"),
+            ("Display Index")
         ]
 
         for val, choice in enumerate(choices):
