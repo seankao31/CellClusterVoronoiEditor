@@ -1,6 +1,6 @@
 import numpy as np
 
-from PIL import Image
+from PIL import Image, ImageFont
 
 from src.color_list import ColorList
 from src.display_option import DisplayOption
@@ -55,6 +55,7 @@ class Model:
         line_width = self.display_option.line_width
         line_color = self.display_option.line_color
         region_alpha = self.display_option.region_alpha
+        areas = []
         finite_segments = []
         infinite_segments = []
         self.blend_image_voronoi = self.back_image.convert('RGB')
@@ -64,7 +65,7 @@ class Model:
             voronoi_analysis = VoronoiAnalysis(voronoi)
 
             bbox = [(0, 0), (width, height)]
-            regions, vertices, finite_segments, infinite_segments = \
+            regions, vertices, areas, finite_segments, infinite_segments = \
                 voronoi_analysis.finitePolygons(bbox)
             for p, region in enumerate(regions):
                 polygon = vertices[region]
@@ -109,5 +110,16 @@ class Model:
 
         draw = Draw(self.blend_image_voronoi)
 
-        for p in self.voronoi_diagram.points:
-            draw.circle(p, radius=point_radius, fill=point_color)
+        font = ImageFont.truetype('Arial.ttf', point_radius + 10)
+
+        for i, p in enumerate(self.voronoi_diagram.points):
+            if self.display_option.point_display == 0:
+                draw.circle(p, radius=point_radius, fill=point_color)
+            elif self.display_option.point_display == 1:
+                area = -1
+                if areas:
+                    area = round(areas[i], 2)
+                draw.text(p, str(area), font=font, fill=point_color)
+            else:
+                color = self.voronoi_diagram.region_color_map[i]
+                draw.text(p, str(color), font=font, fill=point_color)

@@ -5,12 +5,17 @@ from pubsub import pub
 
 class DisplayOption:
     def __init__(self):
+        self.point_display = 0
         self.point_radius = 2
         self.point_color = (255, 0, 0)
         self.line_width = 4
         self.line_color = (255, 0, 0)
         self.region_alpha = 0.5
         self.scale = 2
+
+        self.v_point_display = tk.IntVar()
+        self.v_point_display.set(self.point_display)
+        self.v_point_display.trace('w', lambda *_: self.setPointDisplay())
 
         self.v_point_radius = tk.StringVar()
         self.v_point_radius.set(str(self.point_radius))
@@ -39,6 +44,7 @@ class DisplayOption:
         self.v_scale.trace('w', lambda *_: self.setScale())
 
     def setVariables(self):
+        self.v_point_display.set(self.point_display)
         self.v_point_radius.set(str(self.point_radius))
         self.v_line_width.set(str(self.line_width))
         self.v_region_alpha.set(str(self.region_alpha))
@@ -47,6 +53,10 @@ class DisplayOption:
         for i in range(3):
             self.v_point_color[i].set(str(point_color[i]))
             self.v_line_color[i].set(str(line_color[i]))
+
+    def setPointDisplay(self):
+        self.point_display = self.v_point_display.get()
+        pub.sendMessage('updateDisplayOption.pointDisplay')
 
     def setPointRadius(self):
         v = 0
