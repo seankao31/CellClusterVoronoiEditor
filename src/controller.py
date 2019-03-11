@@ -1,5 +1,6 @@
 from functools import partial
 import json
+import numpy as np
 import pickle
 
 from pubsub import pub
@@ -24,7 +25,7 @@ class Controller:
         pub.subscribe(self.openFile, 'openFile')
         pub.subscribe(self.taskLoadImage, 'loadImageFile')
         pub.subscribe(self.taskExportImage, 'exportImage')
-        pub.subscribe(self.taskExportPoints, 'exportPoints')
+        pub.subscribe(self.taskExportData, 'exportData')
         pub.subscribe(self.taskSaveFile, 'saveFile')
         pub.subscribe(self.model.color_list.new, 'newColor')
         pub.subscribe(self.updateTaskView, 'updateVoronoi')
@@ -91,11 +92,38 @@ class Controller:
             return
         self.model.blend_image_voronoi.save(export_file_name)
 
-    def taskExportPoints(self, export_file_name):
+    def taskExportData(self, export_file_name):
         if not self.task_loaded:
             return
         with open(export_file_name, 'w') as outfile:
-            json.dump(self.model.voronoi_diagram.points, outfile)
+            data = {}
+
+            # points
+            data['points'] = []
+            for i in range(len(self.model.voronoi_diagram.points)):
+                point_data = {}
+                point_data['point_id'] = i
+                point_data['position'] = self.model.voronoi_diagram.points[i]
+                point_data['region_color'] = \
+                    self.model.voronoi_diagram.region_color_map[i]
+                area = -1
+                if self.model.voronoi_diagram.areas:
+                    area = self.model.voronoi_diagram.areas[i]
+                point_data['region_area'] = area
+                data['points'].append(point_data)
+
+            # color list
+            data['colors'] = []
+            for key, val in self.model.color_list.colors.items():
+                color_data = {}
+                color_data['color_id'] = key
+                if isinstance(val[0], np.generic):
+                    color_data['rgb'] = tuple(v.item() for v in val)
+                else:
+                    color_data['rgb'] = val
+                data['colors'].append(color_data)
+
+            json.dump(data, outfile, indent=4)
 
     def taskSaveFile(self, save_file_name):
         with open(save_file_name, 'wb') as f:

@@ -30,7 +30,7 @@ class Menubar:
         self.file_menu.add_command(
             label='Export Image', command=self.file_export_image)
         self.file_menu.add_command(
-            label='Export Points', command=self.file_export_points)
+            label='Export Data', command=self.file_export_data)
 
         self.file_menu.add_separator()
 
@@ -67,10 +67,10 @@ class Menubar:
             defaultextension='.tiff', filetypes=self.image_file_types)
         pub.sendMessage('exportImage', export_file_name=name)
 
-    def file_export_points(self):
+    def file_export_data(self):
         name = filedialog.asksaveasfilename(
             defaultextension='.json', filetypes=[('json files', '*.json')])
-        pub.sendMessage('exportPoints', export_file_name=name)
+        pub.sendMessage('exportData', export_file_name=name)
 
     def editMenu(self):
         self.edit_menu = tk.Menu(self.menubar)

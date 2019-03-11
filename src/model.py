@@ -1,6 +1,7 @@
 import numpy as np
 
-from PIL import Image, ImageFont
+from PIL import Image
+# from PIL import ImageFont
 
 from src.color_list import ColorList
 from src.display_option import DisplayOption
@@ -55,7 +56,7 @@ class Model:
         line_width = self.display_option.line_width
         line_color = self.display_option.line_color
         region_alpha = self.display_option.region_alpha
-        areas = []
+        self.voronoi_diagram.areas = []
         finite_segments = []
         infinite_segments = []
         self.blend_image_voronoi = self.back_image.convert('RGB')
@@ -67,6 +68,7 @@ class Model:
             bbox = [(0, 0), (width, height)]
             regions, vertices, areas, finite_segments, infinite_segments = \
                 voronoi_analysis.finitePolygons(bbox)
+            self.voronoi_diagram.areas = areas
             for p, region in enumerate(regions):
                 polygon = vertices[region]
                 flattened = [i for sub in polygon for i in sub]
@@ -110,16 +112,21 @@ class Model:
 
         draw = Draw(self.blend_image_voronoi)
 
-        font = ImageFont.truetype('Arial.ttf', point_radius + 10)
+        # font = ImageFont.truetype('Arial.ttf', point_radius + 10)
 
         for i, p in enumerate(self.voronoi_diagram.points):
             if self.display_option.point_display == 0:
                 draw.circle(p, radius=point_radius, fill=point_color)
             elif self.display_option.point_display == 1:
                 area = -1
-                if areas:
-                    area = round(areas[i], 2)
-                draw.text(p, str(area), font=font, fill=point_color)
-            else:
+                if self.voronoi_diagram.areas:
+                    area = round(self.voronoi_diagram.areas[i], 2)
+                # draw.text(p, str(area), font=font, fill=point_color)
+                draw.text(p, str(area), fill=point_color)
+            elif self.display_option.point_display == 2:
                 color = self.voronoi_diagram.region_color_map[i]
-                draw.text(p, str(color), font=font, fill=point_color)
+                # draw.text(p, str(color), font=font, fill=point_color)
+                draw.text(p, str(color), fill=point_color)
+            else:
+                # draw.text(p, str(i), font=font, fill=point_color)
+                draw.text(p, str(i), fill=point_color)
