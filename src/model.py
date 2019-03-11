@@ -110,7 +110,7 @@ class Model:
 
         draw = Draw(self.blend_image_voronoi)
 
-        font = ImageFont.truetype('Arial.ttf', point_radius + 10)
+        # font = ImageFont.truetype('Arial.ttf', point_radius + 10)
 
         for i, p in enumerate(self.voronoi_diagram.points):
             if self.display_option.point_display == 0:
@@ -119,7 +119,9 @@ class Model:
                 area = -1
                 if areas:
                     area = round(areas[i], 2)
-                draw.text(p, str(area), font=font, fill=point_color)
+                # draw.text(p, str(area), font=font, fill=point_color)
+                draw.text(p, str(area), fill=point_color)
             else:
                 color = self.voronoi_diagram.region_color_map[i]
-                draw.text(p, str(color), font=font, fill=point_color)
+                # draw.text(p, str(color), font=font, fill=point_color)
+                draw.text(p, str(color), fill=point_color)
