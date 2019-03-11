@@ -64,13 +64,23 @@ class VoronoiAnalysis:
                 list(t) for t in itertools.product(
                         *list(map(list, zip(*bbox))))]
 
+        self.bounded_areas = []
+
         for p, region in enumerate(vor.point_region):
             vertices = vor.regions[region]
 
             if all(v >= 0 for v in vertices):
                 # finite region
                 self.bounded_regions.append(vertices)
+
+                # calculate polygon area
+                vs = vor.vertices[vertices]
+                hull = ConvexHull(vs)
+                vs = vs[hull.vertices]  # sort
+                self.bounded_areas.append(self.polyArea(vs))
                 continue
+
+            self.bounded_areas.append(-1)
 
             # reconstruct bounded region
             new_region = [v for v in vertices if v >= 0]
@@ -96,7 +106,7 @@ class VoronoiAnalysis:
             self.bounded_regions.append(new_region.tolist())
 
         return (self.bounded_regions, np.asarray(self.augmented_vertices),
-                finite_segments, infinite_segments)
+                self.bounded_areas, finite_segments, infinite_segments)
 
     def decideAddPoint(self, v, p, rs):
         v = np.array(self.augmented_vertices[v])
@@ -109,3 +119,9 @@ class VoronoiAnalysis:
                           np.sign(np.cross(r[1]-r[0], p-r[0])))
 
         return all(result)
+
+    def polyArea(self, points):
+        points = np.array(points)
+        x = points.transpose()[0]
+        y = points.transpose()[1]
+        return 0.5*np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))

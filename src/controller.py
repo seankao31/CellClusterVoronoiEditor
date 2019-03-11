@@ -29,6 +29,8 @@ class Controller:
         pub.subscribe(self.model.color_list.new, 'newColor')
         pub.subscribe(self.updateTaskView, 'updateVoronoi')
         pub.subscribe(self.updateTaskView, 'updateDisplayOption')
+        pub.subscribe(self.updatePointDisplay,
+                      'updateDisplayOption.pointDisplay')
         pub.subscribe(self.model.color_list.__setitem__, 'editColor')
         pub.subscribe(self.updateTaskView, 'updateColorList')
         pub.subscribe(self.updateMainView, 'updateColorList.newColor')
@@ -212,6 +214,10 @@ class Controller:
             return
         self.model.blendImageVoronoi()
         self.taskDisplayImage(self.model.blend_image_voronoi)
+
+    def updatePointDisplay(self):
+        self.display_option_view.updatePointDisplay(
+            self.model.display_option.point_display)
 
     def updateMainView(self):
         self.main_view.updateColorList(self.model.color_list)
