@@ -1,1 +1,1 @@
-# Color Voronoi
+# Cell Cluster Voronoi Editor
